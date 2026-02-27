@@ -1,0 +1,29 @@
+name: BTC Chandelier Exit Scanner
+
+on:
+  schedule:
+    - cron: '0 * * * *'    # Run at the top of every hour
+    - cron: '30 * * * *'   # Run at 30 minutes past every hour
+  workflow_dispatch:         # Allows manual trigger from GitHub UI (for testing)
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run Chandelier Exit Scanner
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
+        run: python chandelier_exit_scanner.py
